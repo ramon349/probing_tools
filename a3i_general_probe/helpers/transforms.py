@@ -72,7 +72,21 @@ class MakeUint(object):
         bit_val = (2**self.bitdepth)-1
         tens = (tens*(bit_val))
         return tens 
+@TransformFactory.register("makeZeroOne")
+class MakeZeroOne(object):
+    def __init__(self,config=None):
+        super(MakeZeroOne,self).__init__()
+    def __call__(self, x):
+        normed = x/x.max() 
+        return normed
 
+@TransformFactory.register("grey2rgb")
+class Grey2RGB(object):
+    def __init__(self,config=None) -> None:
+        super(Grey2RGB, self).__init__()
+
+    def __call__(self, x):
+        return x.repeat(3, 1, 1).to(torch.float)
 @TransformFactory.register("stack")
 class StackTens(object): 
     def __init__(self,config,name='stack3D'):
@@ -88,6 +102,10 @@ def _gen_normalize(config):
     mu = config['norm_mu']=config['norm_mu']
     std = config['norm_std']=config['norm_std']
     return torch_trx.Normalize(mu,std)
+
+@TransformFactory.register("tensor")
+def _to_tensor(config): 
+    return torch_trx.ToTensor()
 
 @TransformFactory.register("resize")
 def _gen_resize(config): 
