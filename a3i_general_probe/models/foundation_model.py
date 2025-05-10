@@ -89,7 +89,7 @@ class VisionEnc(nn.Module):
 class VisionProbe(nn.Module): 
     def __init__(self,config ) -> None:
         super(VisionProbe, self).__init__()
-        num_task = self.conf['num_task']
+        num_task = config['n_classes']
         self.cls = nn.Linear(2048,num_task)
     def forward(self, x):
         return  self.cls(x) 

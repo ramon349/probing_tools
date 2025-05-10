@@ -5,7 +5,8 @@ from torch.utils.data import Dataset
 from PIL import Image
 import numpy as np
 import torch 
-
+from torch.utils.data import WeightedRandomSampler
+from torch import functional as F
 class DataRegister:
     """ The purpose of this class is to be a global dictionary that stores all the dataset classes 
     The register method is a decoractor function that will add the class function to a list of avialable datasets 
@@ -101,3 +102,34 @@ class MammoFeatExtract(Dataset):
         return img, img_path
     def __len__(self):
         return self.df.shape[0]
+
+@DataRegister.register(cls_name='medclip_ds_single')
+class MedclipDSSingle(Dataset):
+    def __init__(self,csv_path,split=None,conf=None) -> None:
+        super().__init__() 
+        self.df = pd.read_csv(csv_path) 
+        self.df = self.df.sample(frac=1,random_state=1996)
+        self.df = self.df[self.df['split']==split]  
+        conf = conf['col_info']
+        self.embed_col = conf['embed_col'] 
+        self.task_col = conf['task_col']
+    def __getitem__(self, index): 
+        row_df = self.df.iloc[index] 
+        path = row_df[self.embed_col]
+        feats = self._get_feats(row_df[self.embed_col])
+        task_label = int(row_df[self.task_col])
+        return feats,task_label,path
+    def _get_feats(self,path): 
+        feats=torch.load(path,map_location='cpu',weights_only=True)
+        feats.requires_grad = False
+        feats = feats/F.norm(feats)
+        return feats 
+    def __len__(self): 
+        return self.df.shape[0]
+    def _make_weighted_sampler(self):
+        labels = self.df[self.task_col]
+        label_d = self.df[self.task_col].value_counts().to_dict()
+        inverse_d = {k:1/v for k,v in label_d.items()}
+        weights =  labels.map(inverse_d).to_list()
+        sampler = WeightedRandomSampler(weights=weights,num_samples=self.df.shape[0])
+        return sampler 

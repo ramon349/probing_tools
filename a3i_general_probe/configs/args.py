@@ -47,79 +47,27 @@ def get_dataset_choices():
     return list(DatasetRegister.get_datasets())
 """
 
-
-def build_train_args():
-    parser = argparse.ArgumentParser(
-        description="Confguration for my deep learning model training for segmentation"
-    )
-    parser.add_argument(
-        "--config_path", required=False, type=open, action=LoadFromFile, help="Path"
-    )
-    parser.add_argument("--csv_path", required=True, type=str)
-    ##image specifics
-    parser.add_argument("--img_size", required=True, type=json.loads)
-    parser.add_argument(
-        "--model",
-        required=True,
-        type=str,
-        choices=get_model_choices(),
-        help="Name of model to be used ",
-    )
-    parser.add_argument("--num_workers", type=int, required=True)
-    parser.add_argument(
-        "--device",
-        type=json.loads,
-        required=True,
-        default=["cuda:0"],
-        help="GPU parameter",
-    )
-    parser.add_argument(
-        "--train_transforms",
-        type=json.loads,
-        required=True,
-        help="List of Names of train transforms and augmentations in form [load,rotate]",
-    )
-    parser.add_argument(
-        "--test_transforms",
-        type=json.loads,
-        required=True,
-        help="List of Names of test transforms and augmentations in form [load] should be subset of train transforms",
-    )  # TODO: asert test is subset of train excluding rands
-    parser.add_argument(
-        "--trainer",
-        type=str,
-        required=True,
-    )
-    parser.add_argument("--log_dir", type=str, required=True)
-    parser.add_argument("--seed", type=int, default=349)
-    parser.add_argument("--epochs", required=True, type=int, help="")
-    parser.add_argument("--batch_size", required=True, type=int)
-    parser.add_argument(
-        "--learn_rate",
-        required=True,
-        type=float,
-        help="Initial Learning rate of our model ",
-    )
-    parser.add_argument("--dataset", type=str, required=True)
-    parser.add_argument("--columns", required=False, type=json.loads)
-    parser.add_argument("--latent_vae_path", required=False, type=str)
-    parser.add_argument("--latent_pred_path", required=False, type=str)
-    parser.add_argument("--splits", type=json.loads, default=["train", "test", "val"])
-    parser.add_argument("--sampler", type=str, default="none", required=False)
-    parser.add_argument("--model_weight", required=False, default=None)
-    parser.add_argument("--model_parameters", required=True, type=json.loads)
-    parser.add_argument("--image_func", required=True, default="dcm", type=str)
-    parser.add_argument("--col_info", required=True, type=json.loads)
-    parser.add_argument("--weighted_cat", required=False, default="", type=str)
-    parser.add_argument(
-        "--task_weights", required=False, default=False, type=parse_bool
-    )
-    parser.add_argument("--grad_step", required=True, default=2, type=int)
-    parser.add_argument("--trainer_args",required=False,type=json.loads)
+def build_train_args(): 
+    parser = argparse.ArgumentParser() 
+    parser.add_argument('--csv_path',required=True,type=str) 
+    parser.add_argument('--config_path',required=False,type=open,action=LoadFromFile)
+    parser.add_argument('--log_dir',required=True,type=str) 
+    parser.add_argument('--device',required=True,type=json.loads) 
+    parser.add_argument('--learn_rate',required=True,type=float)
+    parser.add_argument("--weight_decay",required=True,type=float)
+    parser.add_argument("--batch_agg",required=True,type=int)
+    parser.add_argument('--epochs',required=True,type=int) 
+    parser.add_argument('--train_mode',required=True,type=str)
+    parser.add_argument("--dataset",required=True,type=str)
+    parser.add_argument("--weight_loss",required=False,default=False,type=parse_bool)
+    parser.add_argument("--model",required=True)
+    parser.add_argument('--batch_size',required=False,default=1,type=int)
+    parser.add_argument("--model_parameters",required=False,default=None,type=json.loads)
     parser.add_argument("--debug",required=False,default=False,type=parse_bool)
-    parser.add_argument("--weight_decay",required=True,type=float) 
-    parser.add_argument("--early_stop",required=False,default=20,type=int)
-    return parser
+    parser.add_argument("--col_info",required=True,type=json.loads,default=None)
+    parser.add_argument("--model_weight",required=False,default="",type=str)
+    parser.add_argument("--trainer_args",required=False,default=None,type=json.loads)
+    return parser 
 
 def build_infer_args():
     parser = argparse.ArgumentParser(
