@@ -27,6 +27,7 @@ def make_data_loader(conf):
     return ts_dl 
 
 def main(): 
+    os.environ['PYTHONHASHSEED']="123456789"
     conf = get_feat_extract_args()
     dl = make_data_loader(conf)  
     model = model_loader(conf)
