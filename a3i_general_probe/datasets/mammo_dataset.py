@@ -95,7 +95,6 @@ class MammoFeatExtract(Dataset):
     def __getitem__(self, index):
         df_row = self.df.iloc[index]
         img_path = df_row[self.img_col].strip(" ")
-        print(img_path)
         img = self.load_func(img_path)
         if self.transforms:
             img = self.transforms(img).to(torch.float)
