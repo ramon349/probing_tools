@@ -70,42 +70,24 @@ def build_train_args():
     return parser 
 
 def build_infer_args():
-    parser = argparse.ArgumentParser(
-        description="Confguration for my deep learning model training for segmentation"
-    )
-    parser.add_argument(
-        "--config_path", required=False, type=open, action=LoadFromFile, help="Path"
-    )
-    parser.add_argument("--csv_path", required=True, type=str)
-    ##image specifics
-    parser.add_argument("--num_workers", type=int, required=True)
-    parser.add_argument(
-        "--device",
-        type=json.loads,
-        required=True,
-        default=["cuda:0"],
-        help="GPU parameter",
-    )
-    parser.add_argument("--model_weight", type=str, required=True)
-    parser.add_argument("--seed", type=int, default=349)
-    parser.add_argument("--batch_size", required=True, type=int)
-    parser.add_argument("--splits", type=json.loads, default=["test"])
-    parser.add_argument("--sampler", type=str, default="none", required=False)
-    parser.add_argument("--dataset", type=str, required=True)
-    parser.add_argument("--image_func", required=True, default="dcm", type=str)
-    parser.add_argument("--col_info", required=True, type=json.loads)
-    parser.add_argument("--grad_step", required=False, default=1, type=int)
-    parser.add_argument("--do_adapt",required=False,default=True,type=parse_bool)
-    parser.add_argument("--debug",required=False,default=False,type=parse_bool)
-    parser.add_argument( "--test_transforms",
-        type=json.loads,
-        required=True,
-        help="List of Names of test transforms and augmentations in form [load] should be subset of train transforms",
-    )  # TODO: asert test is subset of train excluding rands
-    parser.add_argument("--img_size", required=True, type=json.loads)
+    parser = argparse.ArgumentParser() 
+    parser.add_argument('--csv_path',required=True,type=str) 
+    parser.add_argument('--config_path',required=False,type=open,action=LoadFromFile)
+    parser.add_argument('--device',required=True,type=str) 
+    parser.add_argument('--train_mode',required=True,type=str)
+    parser.add_argument('--model_weight',required=True,type=str)
+    parser.add_argument("--model_name",required=True,default='GMA')
+    parser.add_argument('--dataset',required=True,type=str)
     parser.add_argument("--output_dir",required=True,type=str)
-    parser.add_argument("--trainer_args",required=False,type=json.loads,default="{}")
-    return parser
+    parser.add_argument("--filter_tiles",required=False,default=True,type=parse_bool)
+    parser.add_argument("--tile_list",required=False,default=['ADI', 'STR', 'LYM', 'TUM', 'MUS', 'NORM', 'MUC',"DEB"],type=list)
+    parser.add_argument("--batch_size",required=False,default=1,type=int)
+    parser.add_argument("--subsample_feats",required=False,default=False,type=parse_bool)
+    parser.add_argument("--model_init_params",required=False,default=None,type=json.loads)
+    parser.add_argument("--col_info",required=True,default=None,type=json.loads)
+    parser.add_argument("--trainer_args",required=False,default=None,type=json.loads)
+    return parser 
+
 
 def build_feat_extract_args(): 
     parser = argparse.ArgumentParser(
