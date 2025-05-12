@@ -1,7 +1,10 @@
 
 # Setup 
-- Create an environment  that has python 3.10.13  using conda or whichever means you prefer 
+- Create an environment  that has python 3.10.13  using conda or whichever means you prefer  
 - install the packages in the requirements file or use the conda yml file 
+```bash 
+python3 -m pip install -r ./my_reqs.tx
+```
 - Install this code as an editable pacakge by doing 
 ```bash 
     python3 -m pip install -e .
